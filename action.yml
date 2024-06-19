@@ -1,17 +1,3 @@
-# Copyright The Helm Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 name: "Helm Chart Releaser"
 description: "Host a Helm charts repo on GitHub Pages"
 author: "The Helm authors"
@@ -20,9 +6,9 @@ branding:
   icon: anchor
 inputs:
   version:
-    description: "The chart-releaser version to use (default: v1.6.1)"
+    description: "The chart-releaser version to use (default: v1.5.0)"
     required: false
-    default: v1.6.1
+    default: v1.5.0
   config:
     description: "The relative path to the chart-releaser config file"
     required: false
@@ -37,38 +23,16 @@ inputs:
     description: "Just install cr tool"
     required: false
   skip_packaging:
-    description: "Skip the packaging option (do your custom packaging before running this action)"
+    description: "skip the packaging option (do your custom packaging before running this action"
     required: false
-  skip_existing:
-    description: "Skip package upload if release exists"
+  skip_update_index:
+    description: "skip updating helm chart repo index"
     required: false
-  skip_upload:
-    description: "Skip package upload"
-    required: false
-  mark_as_latest:
-    description: Mark the created GitHub release as 'latest'
-    required: false
-    default: true
-  packages_with_index:
-    description: "Upload chart packages directly into publishing branch"
-    required: false
-    default: false
-  pages_branch:
-    description: "Name of the branch to be used to push the index and artifacts. (default to: gh-pages but it is not set in the action it is a default value for the chart-releaser binary)"
-    required: false
-outputs:
-  changed_charts:
-    description: "A comma-separated list of charts that were released on this run. Will be an empty string if no updates were detected, will be unset if `--skip_packaging` is used: in the latter case your custom packaging step is responsible for setting its own outputs if you need them."
-    value: ${{ steps.release.outputs.changed_charts }}
-  chart_version:
-    description: "The version of the most recently generated charts; will be set even if no charts have been updated since the last run."
-    value: ${{ steps.release.outputs.chart_version }}
 
 runs:
   using: composite
   steps:
-    - id: release
-      run: |
+    - run: |
         owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
         repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
 
@@ -99,34 +63,10 @@ runs:
         if [[ -n "${{ inputs.skip_packaging }}" ]]; then
             args+=(--skip-packaging "${{ inputs.skip_packaging }}")
         fi
-
-        if [[ -n "${{ inputs.skip_existing }}" ]]; then
-            args+=(--skip-existing "${{ inputs.skip_existing }}")
-        fi
-
-        if [[ -n "${{ inputs.skip_upload }}" ]]; then
-            args+=(--skip-upload "${{ inputs.skip_upload }}")
-        fi
-
-        if [[ -n "${{ inputs.mark_as_latest }}" ]]; then
-            args+=(--mark-as-latest "${{ inputs.mark_as_latest }}")
-        fi
-
-        if [[ -n "${{ inputs.packages_with_index }}" ]]; then
-            args+=(--packages-with-index "${{ inputs.packages_with_index }}")
-        fi
-
-        if [[ -n "${{ inputs.pages_branch }}" ]]; then
-            args+=(--pages-branch "${{ inputs.pages_branch }}")
+        
+        if [[ -n "${{ inputs.skip_update_index }}" ]]; then
+            args+=(--skip-update-index "${{ inputs.skip_update_index }}")
         fi
 
         "$GITHUB_ACTION_PATH/cr.sh" "${args[@]}"
-
-        if [[ -f changed_charts.txt ]]; then
-            cat changed_charts.txt >> "$GITHUB_OUTPUT"
-        fi
-        if [[ -f chart_version.txt ]]; then
-            cat chart_version.txt >> "$GITHUB_OUTPUT"
-        fi
-        rm -f changed_charts.txt chart_version.txt
       shell: bash
