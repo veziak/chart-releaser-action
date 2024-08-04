@@ -1,6 +1,6 @@
 name: "Helm Chart Releaser"
 description: "Host a Helm charts repo on GitHub Pages"
-author: "The Helm authors"
+author: "veziak"
 branding:
   color: blue
   icon: anchor
@@ -68,5 +68,5 @@ runs:
             args+=(--skip-update-index "${{ inputs.skip_update_index }}")
         fi
 
-        "$GITHUB_ACTION_PATH/cr.sh" "${args[@]}"
+        "python $GITHUB_ACTION_PATH/main.py" "${args[@]}"
       shell: bash
