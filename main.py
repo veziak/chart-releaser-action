@@ -1,28 +1,31 @@
 import argparse
 import os
+import platform
 import re
 import subprocess
 import sys
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(description="Script description")
-    parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
-    parser.add_argument("--config", type=str, help="Configuration file")
-    parser.add_argument("-v", "--version", type=str, help="Version")
-    parser.add_argument("-d", "--charts-dir", type=str, help="Charts directory")
-    parser.add_argument("-o", "--owner", type=str, required=True, help="Owner")
-    parser.add_argument("-r", "--repo", type=str, required=True, help="Repo")
-    parser.add_argument("-n", "--install-dir", type=str, help="Install directory")
-    parser.add_argument("-i", "--install-only", action="store_true", help="Install only")
-    parser.add_argument("-s", "--skip-packaging", action="store_true", help="Skip packaging")
-    parser.add_argument("-u", "--skip-update-index", action="store_true", help="Skip update index")
+    print("parse_command_line")
+    args_parser = argparse.ArgumentParser(description="Script description", conflict_handler='resolve')
+    args_parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
+    args_parser.add_argument("--config", type=str, help="Configuration file")
+    args_parser.add_argument("-v", "--version", type=str, help="Version")
+    args_parser.add_argument("-d", "--charts-dir", type=str, help="Charts directory")
+    args_parser.add_argument("-o", "--owner", type=str, required=True, help="Owner")
+    args_parser.add_argument("-r", "--repo", type=str, required=True, help="Repo")
+    args_parser.add_argument("-n", "--install-dir", type=str, help="Install directory")
+    args_parser.add_argument("-i", "--install-only", action="store_true", help="Install only")
+    args_parser.add_argument("-s", "--skip-packaging", action="store_true", help="Skip packaging")
+    args_parser.add_argument("-u", "--skip-update-index", action="store_true", help="Skip update index")
 
-    args = parser.parse_args()
+    args = args_parser.parse_args()
 
     # Handle required arguments and defaults
     if not args.install_dir:
-        arch = os.uname()[4]  # Assuming uname returns a tuple
-        args.install_dir = f"{os.environ['RUNNER_TOOL_CACHE']}/cr/{args.version}/{arch}"
+        arch = platform.machine()
+        tool_cache = os.environ['RUNNER_TOOL_CACHE']
+        args.install_dir = f"{tool_cache}/cr/{args.version}/{arch}"
 
     if args.install_only:
         print("Will install cr tool and not run it...")
