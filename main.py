@@ -50,16 +50,16 @@ def install_chart_releaser(version):
     install_dir = os.path.join(cache_dir, 'cr', version)
     if not os.path.isdir(install_dir):
         os.makedirs(install_dir, exist_ok=True)
-
-        print(f"Installing chart-releaser on {install_dir}...")
+        print(f"Installing chart-releaser on {install_dir}")
         url = f"https://github.com/helm/chart-releaser/releases/download/{version}/chart-releaser_{version[1:]}_linux_amd64.tar.gz"
         subprocess.run(['curl', '-sSLo', 'cr.tar.gz', url], check=True)
         subprocess.run(['tar', '-xzf', 'cr.tar.gz', '-C', install_dir], check=True)
         os.remove('cr.tar.gz')
+        subprocess.run(['ls'], check=True)
 
     # Add cr directory to PATH (consider environment variables instead of modifying PATH directly)
     print('Adding cr directory to PATH...')
-    # os.environ['PATH'] = f"{install_dir}:{os.environ['PATH']}"  # Not recommended
+    os.environ['PATH'] = f"{install_dir}:{os.environ['PATH']}"  # Not recommended
 
 def lookup_latest_tag():
     """
