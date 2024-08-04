@@ -179,8 +179,11 @@ def main():
         print(f"Discovering changed charts since '{latest_tag}'...")
         changed_charts = lookup_changed_charts(latest_tag, charts_dir)
 
+        print(f"changed charts: {changed_charts}")
         if changed_charts:
             install_chart_releaser(version=version)  # Replace with actual version if needed
+            cwd = os.getcwd()
+            print(f"current dir: {cwd}")
 
             os.makedirs(".cr-release-packages", exist_ok=True)
             os.makedirs(".cr-index", exist_ok=True)
