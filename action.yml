@@ -68,5 +68,5 @@ runs:
             args+=(--skip-update-index "${{ inputs.skip_update_index }}")
         fi
 
-        $GITHUB_ACTION_PATH/main.py "${args[@]}"
+        python $GITHUB_ACTION_PATH/main.py "${args[@]}"
       shell: bash
