@@ -72,5 +72,5 @@ runs:
         python --version
         echo ls $GITHUB_ACTION_PATH/../
         echo ----
-        "python $GITHUB_ACTION_PATH/../main.py" "${args[@]}"
+        "python $GITHUB_ACTION_PATH/cr.sh" "${args[@]}"
       shell: bash
