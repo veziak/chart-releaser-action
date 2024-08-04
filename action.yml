@@ -74,5 +74,5 @@ runs:
         echo ----
         ls 
         echo ----
-        "$GITHUB_ACTION_PATH/cr.sh" "${args[@]}"
+        echo "$GITHUB_ACTION_PATH/cr.sh" "${args[@]}"
       shell: bash
