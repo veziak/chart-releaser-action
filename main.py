@@ -4,6 +4,7 @@ import platform
 import re
 import subprocess
 import sys
+import yaml
 
 def parse_command_line():
     print("parse_command_line")
@@ -82,15 +83,17 @@ def filter_charts(charts_dir):
     returns:
         str: Path to a valid Helm chart directory.
     """
+    result = []
     print("filter_charts-------------------------------------------")
     for chart_dir in os.listdir(charts_dir):
         print(f"chart_dir: {chart_dir}")
         chart_path = os.path.join(charts_dir, chart_dir)
         chart_file = os.path.join(chart_path, 'Chart.yaml')
         if os.path.isfile(chart_file):
-            yield chart_path
+            result.append(chart_path)
         else:
             print(f"WARNING: {chart_file} is missing, assuming that '{chart_dir}' is not a Helm chart dir. Skipping.", file=sys.stderr)
+    return result
 
 def lookup_changed_charts(commit, charts_dir):
     """
@@ -105,6 +108,13 @@ def lookup_changed_charts(commit, charts_dir):
     print("lookup_changed_charts-------------------------------------------")
     all_charts = filter_charts(charts_dir)
 
+    for chart in all_charts:
+        with open(f"{chart}/Chart.yaml", 'r') as stream:
+            chart_yaml = yaml.safe_load(stream)
+            version = chart_yaml['version']
+            print(f"{chart}, {version}")
+    chart_version = yaml.version
+    chart_tag = "$(basename $chart_path)-$chart_version"
     try:
         changed_files = subprocess.check_output(['git', 'diff', '--find-renames', '--name-only', commit, charts_dir]).decode().strip()
     except subprocess.CalledProcessError:
@@ -206,6 +216,7 @@ def main():
         release_charts(owner, repo, config)
         if not skip_update_index:
             update_index(owner, repo, config)
+
 
 if __name__ == "__main__":
     main()
