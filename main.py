@@ -82,6 +82,7 @@ def filter_charts(charts_dir):
     returns:
         str: Path to a valid Helm chart directory.
     """
+    print("filter_charts-------------------------------------------")
     for chart_dir in os.listdir(charts_dir):
         print(f"chart_dir: {chart_dir}")
         chart_path = os.path.join(charts_dir, chart_dir)
@@ -101,8 +102,8 @@ def lookup_changed_charts(commit, charts_dir):
         list: List of paths to changed charts.
     """
 
-    depth = len(re.findall(r'[^\/]', charts_dir)) + 1
-    fields = f"1-{depth}"
+    print("lookup_changed_charts-------------------------------------------")
+    all_charts = filter_charts(charts_dir)
 
     try:
         changed_files = subprocess.check_output(['git', 'diff', '--find-renames', '--name-only', commit, charts_dir]).decode().strip()
