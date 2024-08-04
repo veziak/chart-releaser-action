@@ -8,7 +8,7 @@ inputs:
   version:
     description: "The chart-releaser version to use (default: v1.5.0)"
     required: false
-    default: v1.5.0
+    default: v1.6.1
   config:
     description: "The relative path to the chart-releaser config file"
     required: false

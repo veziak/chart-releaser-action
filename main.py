@@ -27,7 +27,7 @@ def parse_command_line():
     if args.install_only:
         print("Will install cr tool and not run it...")
         # Replace with your install_chart_releaser function
-        install_chart_releaser()
+        #install_chart_releaser()
         sys.exit(0)
 
     return args
@@ -122,3 +122,85 @@ def package_chart(chart, config=None):
     if config:
         args.extend(['--config', config])
 
+
+def release_charts(owner, repo, config=None):
+    """Releases charts using cr.
+
+    Args:
+        owner (str): The chart owner.
+        repo (str): The chart repository.
+        config (str, optional): Path to a configuration file. Defaults to None.
+    """
+
+    args = ["cr", "upload", "-o", owner, "-r", repo, "-c", subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()]
+    if config:
+        args.extend(["--config", config])
+
+    print("Releasing charts...")
+    subprocess.run(args, check=True)
+
+def update_index(owner, repo, config=None):
+    """Updates the charts repo index using cr.
+    Args:
+        owner (str): The chart owner.
+        repo (str): The chart repository.
+        config (str, optional): Path to a configuration file. Defaults to None.
+    """
+    args = ["cr", "index", "-o", owner, "-r", repo, "--push"]
+    if config:
+        args.extend(["--config", config])
+    print("Updating charts repo index...")
+    subprocess.run(args, check=True)
+
+def main():
+    args = parse_command_line()
+    version = args.version
+    config = args.config
+    charts_dir = args.charts_dir
+    owner = args.owner
+    repo = args.repo
+    skip_packaging = args.skip_packaging
+    skip_update_index = args.skip_update_index
+
+    # Check for required environment variable
+    cr_token = os.environ.get("CR_TOKEN")
+    if not cr_token:
+        print("Environment variable CR_TOKEN must be set", file=sys.stderr)
+        sys.exit(1)
+
+    # Change to repo root
+    repo_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
+    os.chdir(repo_root)
+
+    if not skip_packaging:
+        print('Looking up latest tag...')
+        latest_tag = lookup_latest_tag()
+        print(f"Discovering changed charts since '{latest_tag}'...")
+        changed_charts = lookup_changed_charts(latest_tag, charts_dir)
+
+        if changed_charts:
+            install_chart_releaser(version=version)  # Replace with actual version if needed
+
+            os.makedirs(".cr-release-packages", exist_ok=True)
+            os.makedirs(".cr-index", exist_ok=True)
+
+            for chart in changed_charts:
+                if os.path.isdir(chart):
+                    package_chart(chart, config)
+                else:
+                    print(f"Chart '{chart}' no longer exists in repo. Skipping it...")
+
+            release_charts(owner, repo, config)
+            if not skip_update_index:
+                update_index(owner, repo, config)
+        else:
+            print("Nothing to do. No chart changes detected.")
+    else:
+        install_chart_releaser(version)  # Replace with actual version if needed
+        os.makedirs(".cr-index", exist_ok=True)
+        release_charts(owner, repo, config)
+        if not skip_update_index:
+            update_index(owner, repo, config)
+
+if __name__ == "__main__":
+    main()
