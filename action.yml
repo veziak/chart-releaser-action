@@ -70,7 +70,7 @@ runs:
 
         echo ----
         python --version
-        echo ls $GITHUB_ACTION_PATH/../
+        echo ls -A $GITHUB_ACTION_PATH/
         echo ----
         "$GITHUB_ACTION_PATH/cr.sh" "${args[@]}"
       shell: bash
