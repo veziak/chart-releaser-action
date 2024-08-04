@@ -74,24 +74,22 @@ def lookup_latest_tag():
     except subprocess.CalledProcessError:
         return subprocess.check_output(['git', 'rev-list', '--max-parents=0', '--first-parent', 'HEAD']).decode().strip()
 
-def filter_charts(chart_dir):
+def filter_charts(charts_dir):
     """
     Filters charts from a directory, checking for existence and Chart.yaml.
     Args:
-        chart_dir (str): The directory containing charts.
-    Yields:
+        charts_dir (str): The directory containing charts.
+    returns:
         str: Path to a valid Helm chart directory.
     """
-
-    for chart in os.listdir(chart_dir):
-        chart_path = os.path.join(chart_dir, chart)
-        if not os.path.isdir(chart_path):
-            continue
+    for chart_dir in os.listdir(charts_dir):
+        print(f"chart_dir: {chart_dir}")
+        chart_path = os.path.join(charts_dir, chart_dir)
         chart_file = os.path.join(chart_path, 'Chart.yaml')
         if os.path.isfile(chart_file):
             yield chart_path
         else:
-            print(f"WARNING: {chart_file} is missing, assuming that '{chart}' is not a Helm chart. Skipping.", file=sys.stderr)
+            print(f"WARNING: {chart_file} is missing, assuming that '{chart_dir}' is not a Helm chart dir. Skipping.", file=sys.stderr)
 
 def lookup_changed_charts(commit, charts_dir):
     """
