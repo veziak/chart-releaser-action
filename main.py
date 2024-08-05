@@ -113,7 +113,7 @@ def lookup_changed_charts(commit, charts_dir):
             chart_yaml = yaml.safe_load(stream)
             version = chart_yaml['version']
             print(f"{chart}, {version}")
-    chart_version = yaml.version
+
     chart_tag = "$(basename $chart_path)-$chart_version"
     try:
         changed_files = subprocess.check_output(['git', 'diff', '--find-renames', '--name-only', commit, charts_dir]).decode().strip()
