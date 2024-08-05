@@ -134,14 +134,14 @@ def package_chart(cr_install_dir, chart_path, config=None):
     :type chart_path: Path to the chart directory.
     :param config:  Path to a configuration file. Defaults to None.
     """
-    print("package_chart......................")
     args = [f'{cr_install_dir}/cr', 'package', chart_path, '--package-path', '.cr-release-packages']
     if config:
         args.extend(['--config', config])
     result = subprocess.check_output(args).decode().strip()
     print(f"Packaged chart {chart_path}: {result}")
 
-def release_charts(owner, repo, config=None):
+
+def release_charts(cr_install_dir, owner, repo, config=None):
     """Releases charts using cr.
 
     Args:
@@ -150,7 +150,7 @@ def release_charts(owner, repo, config=None):
         config (str, optional): Path to a configuration file. Defaults to None.
     """
 
-    args = ["cr", "upload", "-o", owner, "-r", repo, "-c",
+    args = [f'{cr_install_dir}/cr', "upload", "-o", owner, "-r", repo, "-c",
             subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()]
     if config:
         args.extend(["--config", config])
