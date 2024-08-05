@@ -122,12 +122,12 @@ def lookup_changed_charts(commit, charts_dir):
         with open(f"{chart}/Chart.yaml", 'r') as stream:
             chart_yaml = yaml.safe_load(stream)
             version = chart_yaml['version']
-            print(f"{chart}, {version}")
+            c = os.path.basename(chart)
+            print(f"{c}, {version}")
 
-            result = subprocess.check_output(["git", "tag", "-l", f"{chart}-{version}"]).decode().strip()
+            result = subprocess.check_output(["git", "tag", "-l", f"{c}-{version}"]).decode().strip()
             print(f"git tag result: {result}")
             pass
-    os.chdir(current_dir)
 
     chart_tag = "$(basename $chart_path)-$chart_version"
     try:
