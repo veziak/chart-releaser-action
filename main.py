@@ -60,10 +60,7 @@ def install_chart_releaser(version):
         os.remove('cr.tar.gz')
 
         print(f"install_dir files:  {os.listdir(install_dir)}")
-
-    # Add cr directory to PATH (consider environment variables instead of modifying PATH directly)
-    print('Adding cr directory to PATH...')
-    os.environ['PATH'] = f"{install_dir}:{os.environ['PATH']}"  # Not recommended
+    return install_dir
 
 
 def lookup_latest_tag():
@@ -185,7 +182,6 @@ def main():
     repo = args.repo
     skip_packaging = args.skip_packaging
     skip_update_index = args.skip_update_index
-    install_dir = args.install_dir
 
     # Check for required environment variable
     cr_token = os.environ.get("CR_TOKEN")
@@ -201,7 +197,7 @@ def main():
 
         print(f"changed charts: {changed_charts}")
         if changed_charts:
-            install_chart_releaser(version=version)  # Replace with actual version if needed
+            cr_install_dir = install_chart_releaser(version=version)  # Replace with actual version if needed
             cwd = os.getcwd()
             print(f"current dir: {cwd}")
             print(f"list dir: {os.listdir()}")
@@ -212,7 +208,7 @@ def main():
             for chart in changed_charts:
                 chart_dir = os.path.join(charts_dir, chart)
                 if os.path.isdir(chart_dir):
-                    package_chart(install_dir, chart_dir, config)
+                    package_chart(cr_install_dir, chart_dir, config)
                 else:
                     print(f"Chart '{chart}' no longer exists in repo. Skipping it...")
 
@@ -222,7 +218,7 @@ def main():
         else:
             print("Nothing to do. No chart changes detected.")
     else:
-        install_chart_releaser(version)  # Replace with actual version if needed
+        cr_install_dir = install_chart_releaser(version)  # Replace with actual version if needed
         os.makedirs(".cr-index", exist_ok=True)
         release_charts(owner, repo, config)
         if not skip_update_index:
