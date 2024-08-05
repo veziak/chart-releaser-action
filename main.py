@@ -131,16 +131,16 @@ def package_chart(cr_install_dir, chart_path, config=None):
     """
     Packages a Helm chart using cr.
     Args:
-        :param cr_install_dir:
-        :param chart_path (str): Path to the chart directory.
-        :param config (str, optional): Path to a configuration file. Defaults to None.
-
+    :param cr_install_dir:
+    :type chart_path: Path to the chart directory.
+    :param config:  Path to a configuration file. Defaults to None.
     """
-
-    args = [f'{cr_install_dir}/cr', 'package', chart_path, '--package-path', '.cr-release-packages']
+    print("package_chart......................")
+    args = ['package', chart_path, '--package-path', '.cr-release-packages']
     if config:
         args.extend(['--config', config])
-
+    result = subprocess.check_output(['{cr_install_dir}/cr', args]).decode().strip()
+    print(f"Packaged chart {chart_path}: {result}")
 
 def release_charts(owner, repo, config=None):
     """Releases charts using cr.
