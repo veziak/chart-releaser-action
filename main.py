@@ -41,10 +41,9 @@ def parse_command_line():
 def install_chart_releaser(version):
     """
     Installs the chart-releaser tool.
-    Args:
-        version (str): The version of chart-releaser to install.
+    :param version: The version of chart-releaser to install.
+    :return: path to installed chart-releaser
     """
-
     cache_dir = os.environ.get('RUNNER_TOOL_CACHE')
     if not cache_dir or not os.path.isdir(cache_dir):
         print(f"Cache directory '{cache_dir}' does not exist", file=sys.stderr)
@@ -58,8 +57,6 @@ def install_chart_releaser(version):
         subprocess.run(['curl', '-sSLo', 'cr.tar.gz', url], check=True)
         subprocess.run(['tar', '-xzf', 'cr.tar.gz', '-C', install_dir], check=True)
         os.remove('cr.tar.gz')
-
-        print(f"install_dir files:  {os.listdir(install_dir)}")
     return install_dir
 
 
