@@ -215,17 +215,17 @@ def main():
                     print(f"Chart '{chart}' no longer exists in repo. Skipping it...")
 
             if not skip_upload:
-                release_charts(owner, repo, config)
+                release_charts(cr_install_dir, owner, repo, config)
             if not skip_update_index:
-                update_index(owner, repo, config)
+                update_index(cr_install_dir, owner, repo, config)
         else:
             print("Nothing to do. No chart changes detected.")
     else:
         cr_install_dir = install_chart_releaser(version)  # Replace with actual version if needed
         os.makedirs(".cr-index", exist_ok=True)
-        release_charts(owner, repo, config)
+        release_charts(cr_install_dir, owner, repo, config)
         if not skip_update_index:
-            update_index(owner, repo, config)
+            update_index(cr_install_dir, owner, repo, config)
 
 
 if __name__ == "__main__":
