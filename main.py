@@ -58,7 +58,6 @@ def install_chart_releaser(version):
         subprocess.run(['curl', '-sSLo', 'cr.tar.gz', url], check=True)
         subprocess.run(['tar', '-xzf', 'cr.tar.gz', '-C', install_dir], check=True)
         os.remove('cr.tar.gz')
-        subprocess.run(['ls'], check=True)
 
     # Add cr directory to PATH (consider environment variables instead of modifying PATH directly)
     print('Adding cr directory to PATH...')
@@ -89,9 +88,7 @@ def filter_charts(charts_dir):
         str: Path to a valid Helm chart directory.
     """
     result = []
-    print("filter_charts-------------------------------------------")
     for chart_dir in os.listdir(charts_dir):
-        print(f"chart_dir: {chart_dir}")
         chart_path = os.path.join(charts_dir, chart_dir)
         chart_file = os.path.join(chart_path, 'Chart.yaml')
         if os.path.isfile(chart_file):
@@ -113,22 +110,14 @@ def lookup_changed_charts(commit, charts_dir):
     """
 
     result = []
-    print("lookup_changed_charts-------------------------------------------")
     all_charts = filter_charts(charts_dir)
-
-    current_dir = os.getcwd()
-    print(f"current dir: {current_dir}")
-
     for chart in all_charts:
         with open(f"{chart}/Chart.yaml", 'r') as stream:
             chart_yaml = yaml.safe_load(stream)
             version = chart_yaml['version']
             c = os.path.basename(chart)
-            print(f"{c}, {version}")
-
             chart_full = f"{c}-{version}"
             tag = subprocess.check_output(["git", "tag", "-l", chart_full]).decode().strip()
-            print(f"git tag result: {tag}")
             if tag == chart_full:
                 # tag/release already exist
                 print(f"Skipping chart {chart_full}, tag already exists")
@@ -138,15 +127,15 @@ def lookup_changed_charts(commit, charts_dir):
     return result
 
 
-def package_chart(chart_path, config=None):
+def package_chart(cr_install_dir, chart_path, config=None):
     """
     Packages a Helm chart using cr.
     Args:
-        chart (str): Path to the chart directory.
+        chart_path (str): Path to the chart directory.
         config (str, optional): Path to a configuration file. Defaults to None.
     """
 
-    args = ['cr', 'package', chart_path, '--package-path', '.cr-release-packages']
+    args = [f'{cr_install_dir}/cr', 'package', chart_path, '--package-path', '.cr-release-packages']
     if config:
         args.extend(['--config', config])
 
@@ -192,13 +181,13 @@ def main():
     repo = args.repo
     skip_packaging = args.skip_packaging
     skip_update_index = args.skip_update_index
+    install_dir = args.install_dir
 
     # Check for required environment variable
     cr_token = os.environ.get("CR_TOKEN")
     if not cr_token:
         print("Environment variable CR_TOKEN must be set", file=sys.stderr)
         sys.exit(1)
-
 
     if not skip_packaging:
         print('Looking up latest tag...')
@@ -219,7 +208,7 @@ def main():
             for chart in changed_charts:
                 chart_dir = os.path.join(charts_dir, chart)
                 if os.path.isdir(chart_dir):
-                    package_chart(chart_dir, config)
+                    package_chart(install_dir, chart_dir, config)
                 else:
                     print(f"Chart '{chart}' no longer exists in repo. Skipping it...")
 
