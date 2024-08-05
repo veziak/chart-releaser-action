@@ -108,11 +108,19 @@ def lookup_changed_charts(commit, charts_dir):
     print("lookup_changed_charts-------------------------------------------")
     all_charts = filter_charts(charts_dir)
 
+    current_dir = os.getcwd()
+    print(f"current dir: {current_dir}")
+
     for chart in all_charts:
         with open(f"{chart}/Chart.yaml", 'r') as stream:
+
             chart_yaml = yaml.safe_load(stream)
             version = chart_yaml['version']
             print(f"{chart}, {version}")
+
+            result = subprocess.check_output(["git", "tag"]).decode().strip()
+            pass
+    os.chdir(current_dir)
 
     chart_tag = "$(basename $chart_path)-$chart_version"
     try:
@@ -217,6 +225,6 @@ def main():
         if not skip_update_index:
             update_index(owner, repo, config)
 
-
 if __name__ == "__main__":
-    main()
+    lookup_changed_charts("d4161a19", "/home/veziak/projects/geekcard/geekcard-charts/charts")
+    #main()
