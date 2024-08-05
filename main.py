@@ -126,11 +126,12 @@ def lookup_changed_charts(commit, charts_dir):
             c = os.path.basename(chart)
             print(f"{c}, {version}")
 
-            tag = subprocess.check_output(["git", "tag", "-l", f"{c}-{version}"]).decode().strip()
+            chart_full = f"{c}-{version}"
+            tag = subprocess.check_output(["git", "tag", "-l", chart_full]).decode().strip()
             print(f"git tag result: {tag}")
-            if tag == f"{c}-{version}":
+            if tag == chart_full:
                 # tag/release already exist
-                pass
+                print(f"Skipping chart {chart_full}, tag already exists")
             else:
                 result.append(c)
     return result
