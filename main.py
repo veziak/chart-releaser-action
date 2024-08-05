@@ -59,6 +59,8 @@ def install_chart_releaser(version):
         subprocess.run(['tar', '-xzf', 'cr.tar.gz', '-C', install_dir], check=True)
         os.remove('cr.tar.gz')
 
+        print(f"install_dir files:  {os.listdir(install_dir)}")
+
     # Add cr directory to PATH (consider environment variables instead of modifying PATH directly)
     print('Adding cr directory to PATH...')
     os.environ['PATH'] = f"{install_dir}:{os.environ['PATH']}"  # Not recommended
