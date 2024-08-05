@@ -124,7 +124,7 @@ def lookup_changed_charts(commit, charts_dir):
             version = chart_yaml['version']
             print(f"{chart}, {version}")
 
-            result = subprocess.check_output(["git", "tag"]).decode().strip()
+            result = subprocess.check_output(["git", "tag", "-l", f"{chart}-{version}"]).decode().strip()
             print(f"git tag result: {result}")
             pass
     os.chdir(current_dir)
