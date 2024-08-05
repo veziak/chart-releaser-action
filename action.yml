@@ -64,6 +64,10 @@ runs:
             args+=(--skip-packaging "${{ inputs.skip_packaging }}")
         fi
         
+        if [[ -n "${{ inputs.skip_upload }}" ]]; then
+            args+=(--skip-upload "${{ inputs.skip_upload }}")
+        fi
+        
         if [[ -n "${{ inputs.skip_update_index }}" ]]; then
             args+=(--skip-update-index "${{ inputs.skip_update_index }}")
         fi
