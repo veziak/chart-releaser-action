@@ -138,7 +138,7 @@ def lookup_changed_charts(commit, charts_dir):
     return result
 
 
-def package_chart(chart, config=None):
+def package_chart(chart_path, config=None):
     """
     Packages a Helm chart using cr.
     Args:
@@ -146,7 +146,7 @@ def package_chart(chart, config=None):
         config (str, optional): Path to a configuration file. Defaults to None.
     """
 
-    args = ['cr', 'package', chart, '--package-path', '.cr-release-packages']
+    args = ['cr', 'package', chart_path, '--package-path', '.cr-release-packages']
     if config:
         args.extend(['--config', config])
 
@@ -217,8 +217,9 @@ def main():
             os.makedirs(".cr-index", exist_ok=True)
 
             for chart in changed_charts:
-                if os.path.isdir(chart):
-                    package_chart(chart, config)
+                chart_dir = os.path.join(charts_dir, chart)
+                if os.path.isdir(chart_dir):
+                    package_chart(chart_dir, config)
                 else:
                     print(f"Chart '{chart}' no longer exists in repo. Skipping it...")
 
