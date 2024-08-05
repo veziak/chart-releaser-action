@@ -131,8 +131,10 @@ def package_chart(cr_install_dir, chart_path, config=None):
     """
     Packages a Helm chart using cr.
     Args:
-        chart_path (str): Path to the chart directory.
-        config (str, optional): Path to a configuration file. Defaults to None.
+        :param cr_install_dir:
+        :param chart_path (str): Path to the chart directory.
+        :param config (str, optional): Path to a configuration file. Defaults to None.
+
     """
 
     args = [f'{cr_install_dir}/cr', 'package', chart_path, '--package-path', '.cr-release-packages']
