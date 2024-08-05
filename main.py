@@ -112,6 +112,7 @@ def lookup_changed_charts(commit, charts_dir):
         list: List of paths to changed charts.
     """
 
+    result = []
     print("lookup_changed_charts-------------------------------------------")
     all_charts = filter_charts(charts_dir)
 
@@ -125,18 +126,14 @@ def lookup_changed_charts(commit, charts_dir):
             c = os.path.basename(chart)
             print(f"{c}, {version}")
 
-            result = subprocess.check_output(["git", "tag", "-l", f"{c}-{version}"]).decode().strip()
-            print(f"git tag result: {result}")
-            pass
-
-    chart_tag = "$(basename $chart_path)-$chart_version"
-    try:
-        changed_files = subprocess.check_output(
-            ['git', 'diff', '--find-renames', '--name-only', commit, charts_dir]).decode().strip()
-    except subprocess.CalledProcessError:
-        changed_files = ""
-
-    return [os.path.join(charts_dir, f) for f in set(re.split(r'/', changed_files)) if f]
+            tag = subprocess.check_output(["git", "tag", "-l", f"{c}-{version}"]).decode().strip()
+            print(f"git tag result: {tag}")
+            if tag == f"{c}-{version}":
+                # tag/release already exist
+                pass
+            else:
+                result.append(c)
+    return result
 
 
 def package_chart(chart, config=None):
