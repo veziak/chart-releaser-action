@@ -136,10 +136,10 @@ def package_chart(cr_install_dir, chart_path, config=None):
     :param config:  Path to a configuration file. Defaults to None.
     """
     print("package_chart......................")
-    args = ['package', chart_path, '--package-path', '.cr-release-packages']
+    args = [f'{cr_install_dir}/cr', 'package', chart_path, '--package-path', '.cr-release-packages']
     if config:
         args.extend(['--config', config])
-    result = subprocess.check_output(['{cr_install_dir}/cr', args]).decode().strip()
+    result = subprocess.check_output(args).decode().strip()
     print(f"Packaged chart {chart_path}: {result}")
 
 def release_charts(owner, repo, config=None):
