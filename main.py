@@ -6,6 +6,7 @@ import subprocess
 import sys
 import yaml
 
+
 def parse_command_line():
     print("parse_command_line")
     args_parser = argparse.ArgumentParser(description="Script description", conflict_handler='resolve')
@@ -36,6 +37,7 @@ def parse_command_line():
 
     return args
 
+
 def install_chart_releaser(version):
     """
     Installs the chart-releaser tool.
@@ -62,6 +64,7 @@ def install_chart_releaser(version):
     print('Adding cr directory to PATH...')
     os.environ['PATH'] = f"{install_dir}:{os.environ['PATH']}"  # Not recommended
 
+
 def lookup_latest_tag():
     """
     Looks up the latest tag using git.
@@ -73,7 +76,9 @@ def lookup_latest_tag():
     try:
         return subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).decode().strip()
     except subprocess.CalledProcessError:
-        return subprocess.check_output(['git', 'rev-list', '--max-parents=0', '--first-parent', 'HEAD']).decode().strip()
+        return subprocess.check_output(
+            ['git', 'rev-list', '--max-parents=0', '--first-parent', 'HEAD']).decode().strip()
+
 
 def filter_charts(charts_dir):
     """
@@ -92,8 +97,10 @@ def filter_charts(charts_dir):
         if os.path.isfile(chart_file):
             result.append(chart_path)
         else:
-            print(f"WARNING: {chart_file} is missing, assuming that '{chart_dir}' is not a Helm chart dir. Skipping.", file=sys.stderr)
+            print(f"WARNING: {chart_file} is missing, assuming that '{chart_dir}' is not a Helm chart dir. Skipping.",
+                  file=sys.stderr)
     return result
+
 
 def lookup_changed_charts(commit, charts_dir):
     """
@@ -113,22 +120,24 @@ def lookup_changed_charts(commit, charts_dir):
 
     for chart in all_charts:
         with open(f"{chart}/Chart.yaml", 'r') as stream:
-
             chart_yaml = yaml.safe_load(stream)
             version = chart_yaml['version']
             print(f"{chart}, {version}")
 
             result = subprocess.check_output(["git", "tag"]).decode().strip()
+            print(f"git tag result: {result}")
             pass
     os.chdir(current_dir)
 
     chart_tag = "$(basename $chart_path)-$chart_version"
     try:
-        changed_files = subprocess.check_output(['git', 'diff', '--find-renames', '--name-only', commit, charts_dir]).decode().strip()
+        changed_files = subprocess.check_output(
+            ['git', 'diff', '--find-renames', '--name-only', commit, charts_dir]).decode().strip()
     except subprocess.CalledProcessError:
         changed_files = ""
 
     return [os.path.join(charts_dir, f) for f in set(re.split(r'/', changed_files)) if f]
+
 
 def package_chart(chart, config=None):
     """
@@ -152,12 +161,14 @@ def release_charts(owner, repo, config=None):
         config (str, optional): Path to a configuration file. Defaults to None.
     """
 
-    args = ["cr", "upload", "-o", owner, "-r", repo, "-c", subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()]
+    args = ["cr", "upload", "-o", owner, "-r", repo, "-c",
+            subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()]
     if config:
         args.extend(["--config", config])
 
     print("Releasing charts...")
     subprocess.run(args, check=True)
+
 
 def update_index(owner, repo, config=None):
     """Updates the charts repo index using cr.
@@ -171,6 +182,7 @@ def update_index(owner, repo, config=None):
         args.extend(["--config", config])
     print("Updating charts repo index...")
     subprocess.run(args, check=True)
+
 
 def main():
     args = parse_command_line()
@@ -224,6 +236,7 @@ def main():
         release_charts(owner, repo, config)
         if not skip_update_index:
             update_index(owner, repo, config)
+
 
 if __name__ == "__main__":
     #lookup_changed_charts("d4161a19", "/home/veziak/projects/geekcard/geekcard-charts/charts")
