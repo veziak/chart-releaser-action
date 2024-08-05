@@ -199,9 +199,6 @@ def main():
         print("Environment variable CR_TOKEN must be set", file=sys.stderr)
         sys.exit(1)
 
-    # Change to repo root
-    repo_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
-    os.chdir(repo_root)
 
     if not skip_packaging:
         print('Looking up latest tag...')
@@ -214,6 +211,7 @@ def main():
             install_chart_releaser(version=version)  # Replace with actual version if needed
             cwd = os.getcwd()
             print(f"current dir: {cwd}")
+            print(f"list dir: {os.listdir()}")
 
             os.makedirs(".cr-release-packages", exist_ok=True)
             os.makedirs(".cr-index", exist_ok=True)
