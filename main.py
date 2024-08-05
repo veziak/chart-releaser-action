@@ -133,6 +133,7 @@ def lookup_changed_charts(commit, charts_dir):
                 # tag/release already exist
                 print(f"Skipping chart {chart_full}, tag already exists")
             else:
+                print(f"Chart {chart_full} doesn't have a tag")
                 result.append(c)
     return result
 
