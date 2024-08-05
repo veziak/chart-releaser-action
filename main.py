@@ -12,7 +12,7 @@ def parse_command_line():
     args_parser = argparse.ArgumentParser(description="Script description", conflict_handler='resolve')
     args_parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     args_parser.add_argument("--config", type=str, help="Configuration file")
-    args_parser.add_argument("-v", "--version", type=str, help="Version")
+    args_parser.add_argument("-v", "--version", type=str, help="cr tool version")
     args_parser.add_argument("-d", "--charts-dir", type=str, help="Charts directory")
     args_parser.add_argument("-o", "--owner", type=str, required=True, help="Owner")
     args_parser.add_argument("-r", "--repo", type=str, required=True, help="Repo")
@@ -32,8 +32,7 @@ def parse_command_line():
 
     if args.install_only:
         print("Will install cr tool and not run it...")
-        # Replace with your install_chart_releaser function
-        #install_chart_releaser()
+        install_chart_releaser(args.version)
         sys.exit(0)
 
     return args
