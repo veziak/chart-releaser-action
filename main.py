@@ -19,6 +19,7 @@ def parse_command_line():
     args_parser.add_argument("-n", "--install-dir", type=str, help="Install directory")
     args_parser.add_argument("-i", "--install-only", action="store_true", help="Install only")
     args_parser.add_argument("-s", "--skip-packaging", action="store_true", help="Skip packaging")
+    args_parser.add_argument("--skip-upload", action="store_true", help="Skip upload")
     args_parser.add_argument("-u", "--skip-update-index", action="store_true", help="Skip update index")
 
     args = args_parser.parse_args()
@@ -182,6 +183,7 @@ def main():
     repo = args.repo
     skip_packaging = args.skip_packaging
     skip_update_index = args.skip_update_index
+    skip_upload = args.skip_upload
 
     # Check for required environment variable
     cr_token = os.environ.get("CR_TOKEN")
@@ -212,7 +214,8 @@ def main():
                 else:
                     print(f"Chart '{chart}' no longer exists in repo. Skipping it...")
 
-            release_charts(owner, repo, config)
+            if not skip_upload:
+                release_charts(owner, repo, config)
             if not skip_update_index:
                 update_index(owner, repo, config)
         else:
