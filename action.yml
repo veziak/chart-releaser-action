@@ -8,7 +8,7 @@ inputs:
   version:
     description: "The chart-releaser version to use (default: v1.5.0)"
     required: false
-    default: v1.5.0
+    default: v1.6.1
   config:
     description: "The relative path to the chart-releaser config file"
     required: false
@@ -57,16 +57,21 @@ runs:
         fi
 
         if [[ -n "${{ inputs.install_only }}" ]]; then
-            args+=(--install-only "${{ inputs.install_only }}")
+            args+=(--install-only)
         fi
 
         if [[ -n "${{ inputs.skip_packaging }}" ]]; then
-            args+=(--skip-packaging "${{ inputs.skip_packaging }}")
+            args+=(--skip-packaging)
+        fi
+        
+        if [[ -n "${{ inputs.skip_upload }}" ]]; then
+            args+=(--skip-upload)
         fi
         
         if [[ -n "${{ inputs.skip_update_index }}" ]]; then
-            args+=(--skip-update-index "${{ inputs.skip_update_index }}")
+            args+=(--skip-update-index)
         fi
 
-        "python $GITHUB_ACTION_PATH/main.py" "${args[@]}"
+        echo python $GITHUB_ACTION_PATH/main.py "${args[@]}"
+        python $GITHUB_ACTION_PATH/main.py "${args[@]}"
       shell: bash
