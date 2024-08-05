@@ -128,7 +128,7 @@ def package_chart(cr_install_dir, chart_path, config=None):
     Packages a Helm chart using cr.
     Args:
     :param cr_install_dir:
-    :type chart_path: Path to the chart directory.
+    :param chart_path: Path to the chart directory.
     :param config:  Path to a configuration file. Defaults to None.
     """
     args = [f'{cr_install_dir}/cr', 'package', chart_path, '--package-path', '.cr-release-packages']
@@ -139,12 +139,13 @@ def package_chart(cr_install_dir, chart_path, config=None):
 
 
 def release_charts(cr_install_dir, owner, repo, config=None):
-    """Releases charts using cr.
-
+    """
+    Releases charts using cr.
     Args:
-        owner (str): The chart owner.
-        repo (str): The chart repository.
-        config (str, optional): Path to a configuration file. Defaults to None.
+    :param cr_install_dir:
+    :param owner: The chart owner.
+    :param repo: The chart repository.
+    :param config: Path to a configuration file. Defaults to None.
     """
 
     args = [f'{cr_install_dir}/cr', "upload", "-o", owner, "-r", repo, "-c",
@@ -156,14 +157,17 @@ def release_charts(cr_install_dir, owner, repo, config=None):
     subprocess.run(args, check=True)
 
 
-def update_index(owner, repo, config=None):
-    """Updates the charts repo index using cr.
-    Args:
-        owner (str): The chart owner.
-        repo (str): The chart repository.
-        config (str, optional): Path to a configuration file. Defaults to None.
+def update_index(cr_install_dir, owner, repo, config=None):
     """
-    args = ["cr", "index", "-o", owner, "-r", repo, "--push"]
+    Updates the charts repo index using cr.
+    Args:
+    :param cr_install_dir:
+    :param owner: The chart owner.
+    :param repo: The chart repository.
+    :param config: Path to a configuration file. Defaults to None.
+    """
+
+    args = [f'{cr_install_dir}/cr', "index", "-o", owner, "-r", repo, "--push"]
     if config:
         args.extend(["--config", config])
     print("Updating charts repo index...")
