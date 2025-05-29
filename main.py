@@ -229,5 +229,4 @@ def main():
 
 
 if __name__ == "__main__":
-    #lookup_changed_charts("d4161a19", "/home/veziak/projects/geekcard/geekcard-charts/charts")
     main()
